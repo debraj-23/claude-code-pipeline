@@ -1,0 +1,19 @@
+package com.demo.mpmbackend.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.time.Instant;
+
+@Getter
+@AllArgsConstructor
+public class ErrorResponse {
+    private int status;
+    private String error;
+    private String message;
+    private Instant timestamp;
+
+    public static ErrorResponse of(int status, String error, String message) {
+        return new ErrorResponse(status, error, message, Instant.now());
+    }
+}

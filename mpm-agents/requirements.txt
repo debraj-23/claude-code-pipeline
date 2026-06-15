@@ -1,0 +1,11 @@
+# Python dependencies for the MPM multi-agent migration system.
+# Install with:  pip install -r requirements.txt
+#
+# The [mcp] extra is required only by figma_agent (Figma MCP server bridge).
+#
+# Use a RECENT anthropic SDK: this project uses adaptive thinking
+# (thinking={"type":"adaptive"}) and output_config={"effort": ...}, which require
+# an up-to-date release. If you hit a TypeError about these params, run:
+#   pip install -U "anthropic[mcp]"
+anthropic[mcp]
+openpyxl>=3.1

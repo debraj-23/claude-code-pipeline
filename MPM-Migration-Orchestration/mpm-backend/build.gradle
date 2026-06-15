@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.4'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.demo'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// The Spring Boot BOM (3.2.4) manages the test-stack versions to artifacts that
+// are not available in this offline environment. Pin them to the 3.2.0 test
+// stack that IS present in the local Maven cache so the suite can build/run.
+dependencyManagement {
+    dependencies {
+        dependency 'org.springframework.boot:spring-boot-starter-test:3.2.0'
+        dependency 'org.springframework.boot:spring-boot-test:3.2.0'
+        dependency 'org.springframework.boot:spring-boot-test-autoconfigure:3.2.0'
+        dependency 'org.springframework:spring-test:6.1.1'
+        dependencySet(group: 'org.junit.jupiter', version: '5.10.1') {
+            entry 'junit-jupiter'
+            entry 'junit-jupiter-api'
+            entry 'junit-jupiter-engine'
+            entry 'junit-jupiter-params'
+        }
+        dependencySet(group: 'org.junit.platform', version: '1.10.1') {
+            entry 'junit-platform-commons'
+            entry 'junit-platform-engine'
+            entry 'junit-platform-launcher'
+        }
+        dependencySet(group: 'net.bytebuddy', version: '1.14.10') {
+            entry 'byte-buddy'
+            entry 'byte-buddy-agent'
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // Database
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}

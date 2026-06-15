@@ -1,0 +1,60 @@
+# ───────────────────────── Build output (Java / Gradle / Grails) ─────────────
+build/
+bin/
+out/
+target/
+.gradle/
+*.class
+
+# ───────────────────────── Node / React ──────────────────────────────────────
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ───────────────────────── Python (mpm-agents) ───────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Agent runtime state (regenerated on every run)
+mpm-agents/agent_status.json
+
+# ───────────────────────── Generated migration output ────────────────────────
+# The agent-generated SOURCE under MPM-Migration-Orchestration/ is committed.
+# Build artifacts inside it (build/, node_modules/, .gradle/) are still ignored
+# by the generic rules above.
+
+# ───────────────────────── Large binaries / archives ─────────────────────────
+*.zip
+
+# ───────────────────────── Secrets / local config ────────────────────────────
+.env
+.env.*
+*.local
+# Contains a live Figma API key — never commit.
+.mcp.json
+
+# ───────────────────────── IDE / editor / OS ─────────────────────────────────
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Gradle/Grails wrappers — this project builds with a locally installed
+# gradle (8.14.2), not the wrapper, so the wrapper files are not committed.
+gradlew
+gradlew.bat
+grailsw
+grailsw.bat
+grails-wrapper.jar
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# Local Claude Code config (personal, per-machine) — ignore .claude in any dir
+.claude/

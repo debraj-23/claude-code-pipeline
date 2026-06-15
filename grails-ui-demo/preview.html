@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Grails UI Components — Preview</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            background: #e8e8e8;
+            color: #222;
+        }
+
+        .page-wrap { background: #f0f0f0; min-height: 100vh; }
+
+        /* Green top bar */
+        .top-bar { height: 4px; background: #3dba4e; }
+
+        /* Toast */
+        #toast {
+            display: none; position: fixed; bottom: 20px; right: 20px;
+            background: #323232; color: #fff; padding: 10px 18px;
+            border-radius: 4px; font-size: 13px; z-index: 9999;
+            box-shadow: 0 2px 8px rgba(0,0,0,.35);
+        }
+
+        /* Form table */
+        .form-table { width: 100%; border-collapse: collapse; }
+        .form-table tr { border-bottom: 1px solid #ddd; }
+        .form-table tr:last-child { border-bottom: none; }
+        .form-table td { padding: 5px 10px 5px 16px; vertical-align: middle; }
+
+        /* Label cell */
+        .form-table td.lbl {
+            width: 38%;
+            font-weight: bold;
+            color: #222;
+            white-space: nowrap;
+            padding-right: 12px;
+        }
+
+        /* Control cell */
+        .form-table td.ctrl { width: 62%; }
+
+        /* Read-only value */
+        .readonly-val { font-size: 13px; color: #222; }
+
+        /* Inputs */
+        input[type="text"] {
+            height: 24px; padding: 2px 5px;
+            border: 1px solid #aaa; background: #fff;
+            font-size: 13px; font-family: Arial, Helvetica, sans-serif;
+            color: #222; outline: none;
+        }
+        input[type="text"]:focus { border-color: #5a9fd4; box-shadow: inset 0 1px 3px rgba(0,0,0,.15); }
+
+        input.w80  { width: 80px; }
+        input.w120 { width: 120px; }
+        input.w160 { width: 160px; }
+        input.w300 { width: 300px; }
+        input.w400 { width: 400px; }
+
+        /* Select */
+        select {
+            height: 24px; padding: 2px 4px;
+            border: 1px solid #aaa; background: #fff;
+            font-size: 13px; font-family: Arial, Helvetica, sans-serif;
+            color: #222; outline: none;
+        }
+        select:focus { border-color: #5a9fd4; }
+        select.w90  { width: 90px; }
+        select.w170 { width: 170px; }
+        select.w420 { width: 420px; }
+
+        /* Checkbox */
+        input[type="checkbox"] {
+            width: 14px; height: 14px;
+            cursor: pointer; vertical-align: middle;
+            margin: 0; accent-color: #1a6fc4;
+        }
+
+        /* Dollar prefix */
+        .dollar-wrap { display: inline-flex; align-items: center; }
+        .dollar-prefix {
+            display: inline-block; height: 24px; line-height: 24px;
+            padding: 0 5px; background: #e8e8e8;
+            border: 1px solid #aaa; border-right: none;
+            font-size: 13px; color: #444;
+        }
+        .dollar-wrap input { border-left: none; width: 130px; }
+
+        /* Info icon */
+        .info-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 16px; height: 16px; background: #4a90d9; color: #fff;
+            border-radius: 50%; font-size: 10px; font-weight: bold; font-style: normal;
+            cursor: default; margin-left: 5px; vertical-align: middle;
+            user-select: none; position: relative; flex-shrink: 0;
+        }
+        .info-icon:hover::after {
+            content: attr(data-tip);
+            position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+            background: #333; color: #fff; padding: 4px 8px; border-radius: 4px;
+            font-size: 11px; white-space: nowrap; z-index: 99; pointer-events: none;
+        }
+        .lbl-wrap { display: flex; align-items: center; }
+
+        /* Action buttons */
+        .action-row {
+            padding: 12px 16px; border-top: 1px solid #ccc;
+            background: #f0f0f0; display: flex; gap: 6px;
+        }
+        .btn {
+            height: 26px; padding: 0 14px; font-size: 13px;
+            font-family: Arial, Helvetica, sans-serif; cursor: pointer;
+            border: 1px solid; outline: none;
+        }
+        .btn-default { background: #f5f5f5; border-color: #aaa; color: #333; }
+        .btn-default:hover { background: #e8e8e8; }
+        .btn-success { background: #5cb85c; border-color: #4cae4c; color: #fff; }
+        .btn-success:hover { background: #4cae4c; }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <div class="top-bar"></div>
+
+    <div id="toast"></div>
+
+    <form id="demoForm" onsubmit="handleSubmit(event)">
+    <table class="form-table">
+
+        <tr>
+            <td class="lbl">Organization ID</td>
+            <td class="ctrl"><span class="readonly-val">100</span></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Short Name</td>
+            <td class="ctrl"><input type="text" class="w120" name="shortName" value="PTITEST"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Full Name</td>
+            <td class="ctrl"><input type="text" class="w300" name="fullName" value="PTI Test Merchant"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate Street Address</td>
+            <td class="ctrl"><input type="text" class="w400" name="streetAddr1"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate Street Address 2</td>
+            <td class="ctrl"><input type="text" class="w400" name="streetAddr2"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate City</td>
+            <td class="ctrl"><input type="text" class="w160" name="city"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate Country</td>
+            <td class="ctrl">
+                <select class="w170" name="country">
+                    <option selected>Select One...</option>
+                    <option>Australia</option><option>Brazil</option><option>Canada</option>
+                    <option>France</option><option>Germany</option><option>India</option>
+                    <option>Japan</option><option>Mexico</option>
+                    <option>United Kingdom</option><option>United States</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate State</td>
+            <td class="ctrl">
+                <select class="w90" name="state">
+                    <option value=""></option>
+                    <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+                    <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+                    <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+                    <option>IL</option><option>IN</option><option>KS</option><option>KY</option>
+                    <option>LA</option><option>ME</option><option>MD</option><option>MA</option>
+                    <option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+                    <option>MT</option><option>NE</option><option>NV</option><option>NH</option>
+                    <option>NJ</option><option>NM</option><option>NY</option><option>NC</option>
+                    <option>ND</option><option>OH</option><option>OK</option><option>OR</option>
+                    <option>PA</option><option>RI</option><option>SC</option><option>SD</option>
+                    <option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+                    <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Corporate Postal Code</td>
+            <td class="ctrl"><input type="text" class="w80" name="postalCode"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Type</td>
+            <td class="ctrl">
+                <select class="w170" name="type">
+                    <option selected>Merchant</option>
+                    <option>Partner</option><option>Acquirer</option><option>Processor</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Sub Type</td>
+            <td class="ctrl">
+                <select class="w170" name="subType">
+                    <option selected>No SubType</option>
+                    <option>Type A</option><option>Type B</option><option>Type C</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Amex Payment Service Provider</td>
+            <td class="ctrl"><input type="checkbox" name="amexPSP"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Amex Marketing Indicator</td>
+            <td class="ctrl"><input type="checkbox" name="amexMarketing" checked/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Acquiring Contract Owner</td>
+            <td class="ctrl">
+                <select class="w170" name="contractOwner">
+                    <option selected>Acquirer A</option>
+                    <option>Acquirer B</option><option>Acquirer C</option><option>Acquirer D</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Parent Organization ID</td>
+            <td class="ctrl">
+                <select class="w170" name="parentOrgId">
+                    <option selected>Select One...</option>
+                    <option>100</option><option>200</option><option>300</option><option>400</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Fee Rounding</td>
+            <td class="ctrl">
+                <select class="w420" name="feeRounding">
+                    <option selected>bankers_agg - round half even at journal entry level</option>
+                    <option>standard - round half up</option>
+                    <option>truncate - always round down</option>
+                    <option>ceiling - always round up</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Deposit Credit Limit (in USD including foreign currency)</td>
+            <td class="ctrl">
+                <span class="dollar-wrap">
+                    <span class="dollar-prefix">$</span>
+                    <input type="text" name="depositLimit"/>
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Refund Credit Limit (in USD including foreign currency)</td>
+            <td class="ctrl">
+                <span class="dollar-wrap">
+                    <span class="dollar-prefix">$</span>
+                    <input type="text" name="refundLimit"/>
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Orphan Refund Credit Limit (in USD including foreign currency)</td>
+            <td class="ctrl">
+                <span class="dollar-wrap">
+                    <span class="dollar-prefix">$</span>
+                    <input type="text" name="orphanLimit"/>
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Support MasterCard Business Service Arrangement Interchange Rates
+                    <i class="info-icon" data-tip="Enable MasterCard BSA interchange rates">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="mcBsa"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Support Query Transactions
+                    <i class="info-icon" data-tip="Allow query transaction types">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="queryTxn"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Salesforce Id</td>
+            <td class="ctrl"><input type="text" class="w160" name="salesforceId"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Enable Logical Back End Tying
+                    <i class="info-icon" data-tip="Enables logical back-end tying for this org">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="logicalTying" checked/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Start Multi Site Day
+                    <i class="info-icon" data-tip="Day of month the multi-site period starts">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="text" class="w80" name="multiSiteDay"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Maximum No. of Category Nodes</td>
+            <td class="ctrl"><input type="text" class="w120" name="categoryNodes" value="100"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">SLA Report Frequency</td>
+            <td class="ctrl">
+                <select class="w170" name="slaFrequency">
+                    <option selected>None</option>
+                    <option>Daily</option><option>Weekly</option><option>Monthly</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Enable Early Report Generation
+                    <i class="info-icon" data-tip="Generate reports before end of day">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="earlyReport"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">Acquirer Fee Level</td>
+            <td class="ctrl">
+                <select class="w170" name="acquirerFeeLevel">
+                    <option selected>Default</option>
+                    <option>Level 1</option><option>Level 2</option><option>Level 3</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Pazien Enable Indicator
+                    <i class="info-icon" data-tip="Enable Pazien integration for this org">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="pazienEnable"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">SSO Pazien
+                    <i class="info-icon" data-tip="Use SSO for Pazien authentication">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="ssoPazien"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">8 Digit Bin SSR
+                    <i class="info-icon" data-tip="Enable 8-digit BIN for SSR processing">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="eightDigitBin"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Net Settled Sales Report Remove Comma
+                    <i class="info-icon" data-tip="Strip commas from net settled sales report">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="removeComma"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Daily eCheck Sales Volume Limit
+                    <i class="info-icon" data-tip="Maximum daily eCheck sales volume">i</i>
+                </span>
+            </td>
+            <td class="ctrl">
+                <span class="dollar-wrap">
+                    <span class="dollar-prefix">$</span>
+                    <input type="text" name="echeckSales"/>
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Daily eCheck Credit Volume Limit
+                    <i class="info-icon" data-tip="Maximum daily eCheck credit volume">i</i>
+                </span>
+            </td>
+            <td class="ctrl">
+                <span class="dollar-wrap">
+                    <span class="dollar-prefix">$</span>
+                    <input type="text" name="echeckCredit"/>
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Preferred Customer Report Indicator
+                    <i class="info-icon" data-tip="Flag this org as a preferred customer">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="preferredCustomer"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">Embedded Finance Enabled
+                    <i class="info-icon" data-tip="Enable embedded finance features">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="embeddedFinance"/></td>
+        </tr>
+
+        <tr>
+            <td class="lbl">
+                <span class="lbl-wrap">SaferPayment Enabled
+                    <i class="info-icon" data-tip="Enable SaferPayment fraud screening">i</i>
+                </span>
+            </td>
+            <td class="ctrl"><input type="checkbox" name="saferPayment"/></td>
+        </tr>
+
+    </table>
+
+    <!-- Action Buttons -->
+    <div class="action-row">
+        <button type="button" class="btn btn-default" onclick="showToast('Checking multi-site compatibility…')">Check Multi-Site Compatible</button>
+        <button type="button" class="btn btn-default" onclick="document.getElementById('demoForm').reset()">Cancel</button>
+        <button type="submit" class="btn btn-success">Save</button>
+    </div>
+
+    </form>
+</div>
+
+<script>
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(function(){ t.style.display = 'none'; }, 3000);
+    }
+    function handleSubmit(e) {
+        e.preventDefault();
+        showToast('Saved successfully!');
+    }
+</script>
+</body>
+</html>
